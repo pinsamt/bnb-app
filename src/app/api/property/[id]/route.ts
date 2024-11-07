@@ -72,7 +72,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Property not found' }, { status: 404 });
     }
 
-    // Check if user has permission to update the property
     if (property.ownerId !== userId && !user.isAdmin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -106,7 +105,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    // Ensure user exists and handle the case where user may be null
     if (!user || (property.ownerId !== userId && !user.isAdmin)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }

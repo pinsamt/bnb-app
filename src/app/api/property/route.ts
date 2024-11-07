@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
+import { Property } from '@prisma/client';
 
 interface DecodedToken extends JwtPayload {
   id: string;
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const property = await prisma.property.create({
+    const property: Property = await prisma.property.create({
       data: {
         name,
         desc,
