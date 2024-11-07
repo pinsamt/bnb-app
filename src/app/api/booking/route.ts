@@ -1,24 +1,38 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import jwt from 'jsonwebtoken';
+import jwt, {JsonWebTokenError, JwtPayload} from 'jsonwebtoken';
 import { Booking } from '@prisma/client';
 
-interface JwtPayload {
+interface DecodedToken extends JwtPayload {
   id: string;
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const token = request.headers.get('Authorization')?.split(' ')[1];
+
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.split(' ')[1];
+
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const decoded: JwtPayload = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-    const madeById = decoded.id;
+    let decoded: DecodedToken;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken;
+    } catch (error) {
+      if (error instanceof JsonWebTokenError) {
+        return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+      }
+      throw error;
+    }
 
-    const body: { checkInDate: string; checkOutDate: string; totalPrice: number; propertyId: string } = await request.json();
+    const madeById= decoded.id;
+
+
+    const body = await request.json() as { checkInDate: string; checkOutDate: string; totalPrice: number; propertyId: string };
     const { checkInDate, checkOutDate, totalPrice, propertyId } = body;
+
 
     const booking: Booking = await prisma.booking.create({
       data: {

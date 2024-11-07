@@ -106,7 +106,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user || (property.ownerId !== userId && !user.isAdmin)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await prisma.booking.deleteMany({ where: { propertyId: id } });

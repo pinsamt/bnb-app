@@ -26,10 +26,6 @@ const BookingForm: React.FC<{ propertyId: string; propertyPrice: number }> = ({ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user) {
-      alert('You must be logged in to create a booking.');
-      return;
-    }
 
     const response = await fetch('/api/booking', {
       method: 'POST',
@@ -43,7 +39,7 @@ const BookingForm: React.FC<{ propertyId: string; propertyPrice: number }> = ({ 
     if (response.ok) {
       alert('Booking created successfully!');
     } else {
-      alert('Failed to create booking.');
+      alert('You need to sign in to create a booking');
     }
   };
 
