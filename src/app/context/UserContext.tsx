@@ -13,6 +13,8 @@ interface User {
 interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
+  decodeToken:  (token?: string) => User | null
+
 }
 
 
@@ -24,20 +26,26 @@ export const UserProvider = (props: PropsWithChildren<{}>) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded: User = JSON.parse(atob(token.split('.')[1])); 
-        setUser(decoded);
-      } catch (error) {
-        console.error('Failed to decode token:', error);
-        setUser(null); 
-      }
-    }
+    const token = localStorage.getItem('token') || ""
+    decodeToken(token)
   }, []);
+const decodeToken = (token?: string) => {
+  if (token) {
+    try {
+      const decoded: User = JSON.parse(atob(token.split('.')[1])); 
+      setUser(decoded);
+      return decoded
+    } catch (error) {
+      console.error('Failed to decode token:', error);
+      setUser(null); 
+      return null
+    }
+  }
+  return null
+}
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, decodeToken }}>
       {children}
     </UserContext.Provider>
   );

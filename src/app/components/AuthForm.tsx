@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '../context/UserContext';
+
+
 
 const AuthForm: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,6 +13,9 @@ const AuthForm: React.FC = () => {
   const [name, setName] = useState('');
   const [error, setError] = useState(''); 
   const router = useRouter();
+
+
+  const {decodeToken} = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +32,7 @@ const AuthForm: React.FC = () => {
       if (isLogin) {
         localStorage.setItem('token', data.token);
       }
+      decodeToken(data.token)
       router.push('/');
     } else {
       setError(data.error || 'Invalid credentials, please try again');
