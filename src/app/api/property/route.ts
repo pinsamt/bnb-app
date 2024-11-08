@@ -7,7 +7,7 @@ interface DecodedToken extends JwtPayload {
   id: string;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<NextResponse> {
   try {
     const authHeader = request.headers.get('Authorization');
     const token = authHeader?.split(' ')[1];
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: Request): Promise<NextResponse> {
   try {
     const properties = await prisma.property.findMany();
 
